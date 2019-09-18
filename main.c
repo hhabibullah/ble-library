@@ -629,7 +629,8 @@ static void advertising_init(void)
 
     memset(&init, 0, sizeof(init));
 
-    init.advdata.name_type               = BLE_ADVDATA_FULL_NAME;
+    init.advdata.name_type = BLE_ADVDATA_SHORT_NAME; // Use a shortened name
+    init.advdata.short_name_len = 6; // Advertise only first 6 letters of name
     init.advdata.include_appearance      = true;
     init.advdata.flags                   = BLE_GAP_ADV_FLAGS_LE_ONLY_GENERAL_DISC_MODE;
     init.advdata.uuids_complete.uuid_cnt = sizeof(m_adv_uuids) / sizeof(m_adv_uuids[0]);
