@@ -89,7 +89,7 @@
 
 #define DEVICE_NAME                     "Nordic_Template"                       /**< Name of device. Will be included in the advertising data. */
 #define MANUFACTURER_NAME               "NordicSemiconductor"                   /**< Manufacturer. Will be passed to Device Information Service. */
-#define APP_ADV_INTERVAL                500                                     /**< The advertising interval (in units of 0.625 ms. This value corresponds to 187.5 ms). */
+#define APP_ADV_INTERVAL                300                                    /**< The advertising interval (in units of 0.625 ms. This value corresponds to 187.5 ms). */
 
 #define APP_ADV_DURATION                18000                                   /**< The advertising duration (180 seconds) in units of 10 milliseconds. */
 #define APP_BLE_OBSERVER_PRIO           3                                       /**< Application's BLE observer priority. You shouldn't need to modify this value. */
@@ -625,22 +625,36 @@ static void bsp_event_handler(bsp_event_t event)
 static void advertising_init(void)
 {
     ret_code_t             err_code;
-    ble_advertising_init_t init;  // Struct containing advertising parameters
-    // Build advertising data struct to pass into @ref ble_advertising_init.
+    ble_advertising_init_t init;
     memset(&init, 0, sizeof(init));
 
+//Set manufacturing data
     ble_advdata_manuf_data_t                  manuf_data; //Variable to hold manufacturer specific data
-    uint8_t data[]                            = "SomeData!"; //Our data to advertise
+    uint8_t data[]                            = "H"; //Our data to advertise
     manuf_data.company_identifier             =  0x0059; //Nordics company ID
     manuf_data.data.p_data                    = data;
     manuf_data.data.size                      = sizeof(data);
     init.advdata.p_manuf_specific_data = &manuf_data;
 
-    init.advdata.name_type = BLE_ADVDATA_SHORT_NAME; // Use a shortened name
+//Build advertising data struct to pass into @ble_advertising_init
+
+    init.advdata.name_type               = BLE_ADVDATA_SHORT_NAME; // Use a shortened name
     init.advdata.short_name_len = 6; // Advertise only first 6 letters of name
+    init.advdata.include_appearance      = true;
     init.advdata.flags                   = BLE_GAP_ADV_FLAGS_LE_ONLY_GENERAL_DISC_MODE;
     init.advdata.uuids_complete.uuid_cnt = sizeof(m_adv_uuids) / sizeof(m_adv_uuids[0]);
     init.advdata.uuids_complete.p_uuids  = m_adv_uuids;
+    int8_t tx_power                   = -4;// Set Power Level
+    init.advdata.p_tx_power_level = &tx_power;
+
+    // Prepare the scan response manufacturer specific data packet
+    ble_advdata_manuf_data_t  manuf_data_response;
+    uint8_t                     data_response[] = "M";
+    manuf_data_response.company_identifier  = 0x0059;
+    manuf_data_response.data.p_data         = data_response;
+    manuf_data_response.data.size           = sizeof(data_response);
+    init.srdata.name_type = BLE_ADVDATA_NO_NAME;
+    init.srdata.p_manuf_specific_data = &manuf_data_response;
 
     init.config.ble_adv_fast_enabled  = true;
     init.config.ble_adv_fast_interval = APP_ADV_INTERVAL;
@@ -653,7 +667,6 @@ static void advertising_init(void)
 
     ble_advertising_conn_cfg_tag_set(&m_advertising, APP_BLE_CONN_CFG_TAG);
 }
-
 
 /**@brief Function for initializing buttons and leds.
  *

@@ -11755,6 +11755,12 @@
 #define POWER_CONFIG_SOC_OBSERVER_PRIO 0
 #endif
 
+
+#ifndef DEBUG
+#define DEBUG
+#endif
+
+
 // </h> 
 //==========================================================
 
