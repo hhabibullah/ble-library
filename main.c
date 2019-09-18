@@ -89,7 +89,7 @@
 
 #define DEVICE_NAME                     "Nordic_Template"                       /**< Name of device. Will be included in the advertising data. */
 #define MANUFACTURER_NAME               "NordicSemiconductor"                   /**< Manufacturer. Will be passed to Device Information Service. */
-#define APP_ADV_INTERVAL                300                                     /**< The advertising interval (in units of 0.625 ms. This value corresponds to 187.5 ms). */
+#define APP_ADV_INTERVAL                500                                     /**< The advertising interval (in units of 0.625 ms. This value corresponds to 187.5 ms). */
 
 #define APP_ADV_DURATION                18000                                   /**< The advertising duration (180 seconds) in units of 10 milliseconds. */
 #define APP_BLE_OBSERVER_PRIO           3                                       /**< Application's BLE observer priority. You shouldn't need to modify this value. */
@@ -625,13 +625,19 @@ static void bsp_event_handler(bsp_event_t event)
 static void advertising_init(void)
 {
     ret_code_t             err_code;
-    ble_advertising_init_t init;
-
+    ble_advertising_init_t init;  // Struct containing advertising parameters
+    // Build advertising data struct to pass into @ref ble_advertising_init.
     memset(&init, 0, sizeof(init));
+
+    ble_advdata_manuf_data_t                  manuf_data; //Variable to hold manufacturer specific data
+    uint8_t data[]                            = "SomeData!"; //Our data to advertise
+    manuf_data.company_identifier             =  0x0059; //Nordics company ID
+    manuf_data.data.p_data                    = data;
+    manuf_data.data.size                      = sizeof(data);
+    init.advdata.p_manuf_specific_data = &manuf_data;
 
     init.advdata.name_type = BLE_ADVDATA_SHORT_NAME; // Use a shortened name
     init.advdata.short_name_len = 6; // Advertise only first 6 letters of name
-    init.advdata.include_appearance      = true;
     init.advdata.flags                   = BLE_GAP_ADV_FLAGS_LE_ONLY_GENERAL_DISC_MODE;
     init.advdata.uuids_complete.uuid_cnt = sizeof(m_adv_uuids) / sizeof(m_adv_uuids[0]);
     init.advdata.uuids_complete.p_uuids  = m_adv_uuids;
