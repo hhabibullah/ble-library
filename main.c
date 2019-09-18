@@ -227,6 +227,21 @@ static void gap_params_init(void)
 
     err_code = sd_ble_gap_ppcp_set(&gap_conn_params);
     APP_ERROR_CHECK(err_code);
+
+
+
+//  This will set different mac-address after each reboot
+
+    ble_gap_privacy_params_t prvt_conf;
+    memset(&prvt_conf, 0, sizeof(prvt_conf));
+    prvt_conf.privacy_mode = BLE_GAP_PRIVACY_MODE_DEVICE_PRIVACY;
+    prvt_conf.private_addr_type = BLE_GAP_ADDR_TYPE_RANDOM_PRIVATE_RESOLVABLE ;
+    prvt_conf.private_addr_cycle_s = 0;
+    err_code = sd_ble_gap_privacy_set(&prvt_conf);
+    APP_ERROR_CHECK(err_code);
+
+
+
 }
 
 
