@@ -78,6 +78,7 @@
 #include "nrf_ble_gatt.h"
 #include "nrf_ble_qwr.h"
 #include "nrf_pwr_mgmt.h"
+#include  "our_service.h"
 
 
 ////jkl
@@ -121,6 +122,8 @@ NRF_BLE_QWR_DEF(m_qwr);                                                         
 BLE_ADVERTISING_DEF(m_advertising);                                             /**< Advertising module instance. */
 
 static uint16_t m_conn_handle = BLE_CONN_HANDLE_INVALID;                        /**< Handle of the current connection. */
+
+ ble_os_t m_our_service;
 
 /* YOUR_JOB: Declare all services structure your application is using
  *  BLE_XYZ_DEF(m_xyz);
@@ -305,6 +308,9 @@ static void services_init(void)
 
     err_code = nrf_ble_qwr_init(&m_qwr, &qwr_init);
     APP_ERROR_CHECK(err_code);
+
+
+    our_service_init (&m_our_service);
 
     /* YOUR_JOB: Add code to initialize the services used by the application.
        ble_xxs_init_t                     xxs_init;
